@@ -12,6 +12,7 @@ public class MovePlayer : MonoBehaviour
     public float speed;
     [SerializeField] float jumpForce;
     [SerializeField] Rigidbody2D rb;
+    [SerializeField] SpriteRenderer spriteRender;
 
     [Header("Colision ---")]
     [SerializeField] LayerMask layerFloor;
@@ -44,6 +45,8 @@ public class MovePlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        AnimationControl();
+
         if (Input.GetButtonDown("Jump") && inFloor)
         {
             isJump = true;
@@ -52,7 +55,6 @@ public class MovePlayer : MonoBehaviour
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.2f);
         }
-
 
         FollowPlatform();
     }
@@ -150,6 +152,19 @@ public class MovePlayer : MonoBehaviour
         else
         {
             transform.SetParent(null);
+        }
+    }
+
+    private void AnimationControl()
+    {
+        // animation
+        if (Input.GetAxisRaw("Horizontal") == 1)
+        {
+            spriteRender.flipX = false;
+        }
+        else if (Input.GetAxisRaw("Horizontal") == -1)
+        {
+            spriteRender.flipX = true;
         }
     }
 }

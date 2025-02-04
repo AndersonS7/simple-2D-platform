@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6688638969882280469}
   m_Layer: 0
   m_Name: Gem
-  m_TagString: soul
+  m_TagString: gem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

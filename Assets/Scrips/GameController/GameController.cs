@@ -2,24 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
 
 public class GameController : MonoBehaviour
 {
-    //configurações iniciais
+    // start config
     [SerializeField] GameObject painelGameOver;
-    [SerializeField] SpawnSouls spawnSouls;
+    [SerializeField] SpawnGem spawnGem;
 
-    // controle da barra
-    public Image timerBar;
-    public float totalTime = 10f;
+    // ui gem
+    [SerializeField] TextMeshProUGUI gemTxt;
+    int gemCounter;
+
+    // bar controller
+    [SerializeField] Image timerBar;
+    [SerializeField] float totalTime = 10f;
     private float currentTime;
 
-    // gameover
     void Start()
     {
         Time.timeScale = 1f;
         painelGameOver.SetActive(false);
-        spawnSouls.SpawnSoul();
+        spawnGem.SpawnNewGem();
         ResetTime();
     }
 
@@ -28,6 +32,7 @@ public class GameController : MonoBehaviour
         TimeController();
     }
 
+    // time
     private void TimeController()
     {
         if (currentTime > 0)
@@ -43,14 +48,28 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void GameOver()
-    {
-        painelGameOver.SetActive(true);
-    }
-
     public void ResetTime()
     {
         currentTime = totalTime;
         timerBar.fillAmount = 1f;
+    }
+
+    // gems
+    public void CountGem(int gem)
+    {
+        gemCounter += gem;
+        gemTxt.text = gemCounter.ToString("D2");
+        spawnGem.SpawnNewGem();
+        ResetTime();
+    }
+
+    public int CurrentGems()
+    {
+        return gemCounter;
+    }
+
+    public void GameOver()
+    {
+        painelGameOver.SetActive(true);
     }
 }
