@@ -17,7 +17,12 @@ public class GetTarget : MonoBehaviour
                 controller.GetComponent<SpriteRenderer>().enabled = false;
             }
 
-            Destroy(collision.gameObject, 0.2f);
+            if (collision.gameObject.GetComponent<Fx>() != null)
+            {
+                collision.gameObject.GetComponent<Fx>().ActiveFx();
+            }
+
+            Destroy(collision.gameObject, 0.4f);
         }
     }
 }

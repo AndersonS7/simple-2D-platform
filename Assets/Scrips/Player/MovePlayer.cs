@@ -12,7 +12,7 @@ public class MovePlayer : MonoBehaviour
     public float speed;
     [SerializeField] float jumpForce;
     [SerializeField] Rigidbody2D rb;
-    [SerializeField] SpriteRenderer spriteRender;
+    [SerializeField] AnimManager anim;
 
     [Header("Colision ---")]
     [SerializeField] LayerMask layerFloor;
@@ -26,32 +26,21 @@ public class MovePlayer : MonoBehaviour
     bool isMove = false;
     bool inFloor = false;
 
-    // status originais
-    public float startSpeed;
-
-    // adicoinar um deay no pulo depois, para o player conseguir pular da ponta da plataforma
-    float countDelayJump = 0;
-    float maxDelayJump = 1.5f;
-
-    // others
     GameObject currentPlatform;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        startSpeed = speed;
-    }
+    public float Direction { get => direction; set => direction = value; }
+    public bool IsJump { get => isJump; set => isJump = value; }
+    public bool InFloor { get => inFloor; set => inFloor = value; }
+
 
     // Update is called once per frame
     void Update()
     {
-        AnimationControl();
-
-        if (Input.GetButtonDown("Jump") && inFloor)
+        if (Input.GetButtonDown("Jump") && inFloor || Input.GetKeyDown(KeyCode.UpArrow) && inFloor)
         {
             isJump = true;
         }
-        else if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
+        else if (Input.GetButtonUp("Jump") && rb.velocity.y > 0 || Input.GetKeyUp(KeyCode.UpArrow) && rb.velocity.y > 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.2f);
         }
@@ -68,10 +57,10 @@ public class MovePlayer : MonoBehaviour
 
     private void Move()
     {
-        direction = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(direction * speed, rb.velocity.y);
+        Direction = Input.GetAxisRaw("Horizontal");
+        rb.velocity = new Vector2(Direction * speed, rb.velocity.y);
 
-        if (direction != 0)
+        if (Direction != 0)
         {
             isMove = true;
         }
@@ -152,19 +141,6 @@ public class MovePlayer : MonoBehaviour
         else
         {
             transform.SetParent(null);
-        }
-    }
-
-    private void AnimationControl()
-    {
-        // animation
-        if (Input.GetAxisRaw("Horizontal") == 1)
-        {
-            spriteRender.flipX = false;
-        }
-        else if (Input.GetAxisRaw("Horizontal") == -1)
-        {
-            spriteRender.flipX = true;
         }
     }
 }
