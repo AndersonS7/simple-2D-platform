@@ -8,6 +8,7 @@ TagManager:
   - platform
   - goo
   - gem
+  - gameController
   layers:
   - Default
   - TransparentFX

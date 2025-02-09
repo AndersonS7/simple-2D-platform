@@ -5,17 +5,18 @@ using UnityEngine;
 public class Fx : MonoBehaviour
 {
     [SerializeField] GameObject fx;
-
-    private void Start()
-    {
-        if (fx != null)
-        {
-            fx.SetActive(false);
-        }
-    }
+    [SerializeField] AudioSource audioManager;
+    [SerializeField] AudioClip sfxCoin;
 
     public void ActiveFx()
     {
-        fx.SetActive(true);
+        gameObject.GetComponent<Collider2D>().enabled = false;
+
+        if (fx != null)
+        {
+            gameObject.GetComponent<SpriteRenderer>().enabled = false;
+            audioManager.PlayOneShot(sfxCoin);
+            fx.SetActive(true);
+        }
     }
 }

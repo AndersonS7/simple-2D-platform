@@ -5,14 +5,49 @@ using UnityEngine;
 
 public class Goo : MonoBehaviour
 {
-    float realSpeed;
+    [SerializeField] float slow;
+    [SerializeField] GameObject sfx;
+    MovePlayer player;
+
+    float realSpeedPlayer;
+    bool inMove;
+
+    private void Update()
+    {
+        if (player != null)
+        {
+            inMove = player.GetComponent<MovePlayer>().IsMove;
+
+            if (inMove)
+            {
+                sfx.SetActive(true);
+            }
+
+            if (!inMove)
+            {
+                sfx.SetActive(false);
+            }
+        }
+        else
+        {
+            inMove = false;
+            sfx.SetActive(false);
+        }
+
+        if (player != null)
+        {
+            player.InFloor = false;
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            realSpeed = collision.GetComponent<MovePlayer>().speed;
-            collision.GetComponent<MovePlayer>().speed = 2;
+            player = collision.gameObject.GetComponent<MovePlayer>();
+            player.InGram = true;
+            realSpeedPlayer = player.Speed;
+            player.Speed = slow;
         }
     }
 
@@ -20,7 +55,9 @@ public class Goo : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            collision.GetComponent<MovePlayer>().speed = realSpeed;
+            player.InGram = false;
+            player.Speed = realSpeedPlayer;
+            player = null;
         }
     }
 }

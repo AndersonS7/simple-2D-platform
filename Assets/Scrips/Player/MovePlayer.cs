@@ -8,11 +8,18 @@ using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class MovePlayer : MonoBehaviour
 {
+    GameController gameController;
+
     [Header("Player ---")]
-    public float speed;
-    [SerializeField] float jumpForce;
+    [SerializeField] float speed;
+    [SerializeField] float speedJump;
     [SerializeField] Rigidbody2D rb;
     [SerializeField] AnimManager anim;
+
+    // jump
+    [SerializeField] float jumpForce;
+    [SerializeField] Vector2 gravity;
+    [SerializeField] GameObject sfxJump;
 
     [Header("Colision ---")]
     [SerializeField] LayerMask layerFloor;
@@ -22,43 +29,75 @@ public class MovePlayer : MonoBehaviour
 
     //status the player
     float direction;
-    bool isJump = false;
     bool isMove = false;
     bool inFloor = false;
+    bool inGram = false;
+    bool isJumping = false;
+    float startSpeed;
+
 
     GameObject currentPlatform;
 
     public float Direction { get => direction; set => direction = value; }
-    public bool IsJump { get => isJump; set => isJump = value; }
+    public bool IsMove { get => isMove; }
     public bool InFloor { get => inFloor; set => inFloor = value; }
+    public bool IsJumping { get => isJumping; }
+    public bool InGram { get => inGram; set => inGram = value; }
+    public float Speed { get => speed; set => speed = value; }
 
+    private void Start()
+    {
+        gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+        startSpeed = speed;
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Jump") && inFloor || Input.GetKeyDown(KeyCode.UpArrow) && inFloor)
+        if (isJumping)
         {
-            isJump = true;
+            speed = speedJump;
         }
-        else if (Input.GetButtonUp("Jump") && rb.velocity.y > 0 || Input.GetKeyUp(KeyCode.UpArrow) && rb.velocity.y > 0)
+        else
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.2f);
+            speed = startSpeed;
         }
 
-        FollowPlatform();
+        if (!gameController.Paused)
+        {
+            if (!InFloor && (rb.velocity.y > 0.1f || rb.velocity.y < -0.1f))
+            {
+                isJumping = true;
+                sfxJump.SetActive(true);
+            }
+            else
+            {
+                isJumping = false;
+            }
+
+            if (inFloor)
+            {
+                sfxJump.SetActive(false);
+            }
+
+            Jump();
+            FollowPlatform();
+        }
     }
 
     void FixedUpdate()
     {
-        Jump();
-        Move();
-        GroundCheck();
+        if (!gameController.Paused)
+        {
+            Move();
+            GroundCheck();
+        }
     }
 
     private void Move()
     {
         Direction = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(Direction * speed, rb.velocity.y);
+        rb.velocity = new Vector2(Direction * Speed, rb.velocity.y);
 
         if (Direction != 0)
         {
@@ -72,10 +111,26 @@ public class MovePlayer : MonoBehaviour
 
     private void Jump()
     {
-        if (isJump)
+        if (inFloor && !inGram)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            isJump = false;
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            }
+        }
+
+        if (rb.velocity.y > 0)
+        {
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp(KeyCode.UpArrow))
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.2f);
+            }
+        }
+
+        //gravity
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity -= gravity * Time.deltaTime;
         }
     }
 
@@ -129,7 +184,7 @@ public class MovePlayer : MonoBehaviour
     {
         if (currentPlatform != null)
         {
-            if (!isJump && !isMove && currentPlatform != null)
+            if (!isMove && currentPlatform != null)
             {
                 transform.SetParent(currentPlatform.transform);
             }

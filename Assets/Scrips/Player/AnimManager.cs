@@ -16,24 +16,28 @@ public class AnimManager : MonoBehaviour
 
     private void AnimationController()
     {
-        
-
-        if (!movePlayer.IsJump)
+        if (movePlayer.Direction == 1)
         {
-            if (movePlayer.Direction == 1)
-            {
-                spriteRender.flipX = false;
-                anim.SetInteger("move", 1);
-            }
-            else if (movePlayer.Direction == -1)
-            {
-                spriteRender.flipX = true;
-                anim.SetInteger("move", 1);
-            }
-            else
-            {
-                anim.SetInteger("move", 0);
-            }
+            anim.SetInteger("move", 1);
+            spriteRender.flipX = false;
+        }
+        else if (movePlayer.Direction == -1)
+        {
+            anim.SetInteger("move", 1);
+            spriteRender.flipX = true;
+        }
+        else
+        {
+            anim.SetInteger("move", 0);
+        }
+
+        if (movePlayer.IsJumping)
+        {
+            anim.SetBool("jump", true);
+        }
+        else if (movePlayer.InFloor || movePlayer.InGram)
+        {
+            anim.SetBool("jump", false);
         }
     }
 }

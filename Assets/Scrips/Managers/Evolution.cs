@@ -21,6 +21,9 @@ public class Evolution : MonoBehaviour
             case 9:
                 obstacle[2].SetActive(true);
                 break;
+            case 15:
+                obstacle[3].SetActive(true);
+                break;
         }
     }
 }
